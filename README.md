@@ -3,6 +3,7 @@ Simple neural network for number recognition.
 
 # Setup
 ## Environment
+* Get the Python compiler from https://www.python.org/.
 * Get the Eclipse IDE from https://www.eclipse.org/.
 * Get PyDev from the Eclipse Marketplace.
 * [Get eGit from the Eclipse Marketplace, if it is not already shipped with the distribution.]
