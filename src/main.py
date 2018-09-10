@@ -5,5 +5,5 @@ Created on 03.09.2018
 '''
 
 if __name__ == '__main__':
-    print("hello python")
+    print("hello python 2")
     pass
