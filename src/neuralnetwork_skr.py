@@ -25,7 +25,7 @@ class neuralNetwork:
         self.lr = learningrate
         #activation is the sigmoid function
         self.activation_function = lambda x: scipy.special.expit(x)
-    pass
+        pass
     
     #train the neural network
     def train(self, inputs_list, targets_list)
@@ -50,7 +50,7 @@ class neuralNetwork:
         #update the weights for the links between the input and hidden layer
         self.wih += self.lr * numpy.dot((hidden_errors * hidden_outputs * (1.0 - hidden_outputs)),
         numpy.transpose(inputs))
-    pass
+        pass
 
     #query the neural network
     def query(self, input_list)
@@ -64,7 +64,7 @@ class neuralNetwork:
         final_inputs = numpy.dot(self.who, hidden_outputs)
         #calculate the signals emerging from final output layer
         final_output = self.activation_function(final_inputs)
-    return final outputs
+        return final outputs
 
     # number of input, hidden and output nodes
     input_nodes = 784
@@ -84,16 +84,17 @@ class neuralNetwork:
     for e in range(epochs):
         #go through all records in the trainings data set
         for record in training data list:
-        #split the record by the ',' commas
-        all_values = record.split(',')
-        #scale and shift the inputs
-        inputs = (numpy.asfarry(all_values[1:]) / 255.0 * 0.99) + 0.01
-        #create the target output values (all 0.01, exept the desired label which is 0.99)
-        targets = numpy.zeros(output_nodes) + 0.01
-        #all values[0] is the target label for this record
-        targets[int(all_values[0])] 0 0.99
-        n.train(input, targets)
-    pass
+            #split the record by the ',' commas
+            all_values = record.split(',')
+            #scale and shift the inputs
+            inputs = (numpy.asfarry(all_values[1:]) / 255.0 * 0.99) + 0.01
+            #create the target output values (all 0.01, exept the desired label which is 0.99)
+            targets = numpy.zeros(output_nodes) + 0.01
+            #all values[0] is the target label for this record
+            targets[int(all_values[0])] = 0.99
+            n.train(input, targets)
+            pass
+        pass
 
     #load the mnist test data csv file into a list
     test_data_file = ope("mnist_dataset/mnist_test.csv", 'r')
@@ -122,8 +123,8 @@ class neuralNetwork:
         else:
             #networks answer doesn't match correct answer, add 0 to scorecard
             scorecard.append(0)
+            pass
         pass
-    pass
     #calculate the performance score, the fraction of correct answers
     scorecard_array = numpy.asarray(scorecard)
     print ("performance = ", scorecard_array.sum() / scorecard_array.size)
