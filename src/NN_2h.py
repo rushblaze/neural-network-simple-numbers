@@ -1,3 +1,8 @@
+'''
+Created on 13.09.2018
+
+@author: Roland
+'''
 import numpy
 #scipy.special for sigmoid function expit()
 import scipy.special
@@ -11,17 +16,19 @@ import time
 class neuralNetwork:
 	
 	#initialise the neural network
-	def __init__(self ,inputnodes, hiddennodes, outputnodes, learningrate):
-		#set number of nodes in each input, hidden, output layer
+	def __init__(self ,inputnodes, hidden1nodes, hidden2nodes, outputnodes, learningrate):
+		#set number of nodes in each input, hidden1, hidden2, output layer
 		self.inodes = inputnodes
-		self.hnodes = hiddennodes
+		self.h1nodes = hidden1nodes
+		self.h2nodes = hidden2nodes
 		self.onodes = outputnodes
 		# link weights matrices, wih (from input to hidden) and who (from hidden to output)
 		# weights inside the arrays are w_i_j, where link is from node i to j in the next layer
 		# w11 w21
 		# w12 w22 etc
-		self.wih = numpy.random.normal(0.0, pow(self.hnodes, -0,5), (self.hnodes, self.inodes))
-		self.who = numpy.random.normal(0.0, pow(self.onodes, -0,5), (self.onodes, self.hnodes))
+		self.wih1 = numpy.random.normal(0.0, pow(self.h1nodes, -0,5), (self.h1nodes, self.inodes))
+		self.wh1h2= numpy.random.normal(0.0, pow(self.h2nodes, -0.5), (self.h2nodes, self.h1nodes))
+		self.wh2o = numpy.random.normal(0.0, pow(self.onodes, -0,5), (self.onodes, self.h2nodes))
 		#learning rate
 		self.lr = learningrate
 		#activation is the sigmoid function
@@ -34,22 +41,31 @@ class neuralNetwork:
 		inputs = numpy.array(input_list, ndmin=2).T
 		targets = numpy.array(targets_list, ndmin=2).T
 		#calculate signals into hidden layer
-		hidden_inputs = numpy.dot(self.wih, inputs)
+		hidden1_inputs = numpy.dot(self.wih1, inputs)
 		#calculate the signals emerging from hidden layer
-		hidden_outputs = self.activation_function(hidden_inputs)
+		hidden1_outputs = self.activation_function(hidden1_inputs)
 		#calculate signals into final output layer
-		final_inputs = numpy.dot(self.who, hidden_outputs)
+		hidden2_inputs = numpy.dot(self.wh1h2, hidden1_outputs)
+		#calculate the signals emerging from hidden layer
+		hidden2_outputs = self.activation_function(hidden2_inputs)
+		#calculate signals into final output layer
+		final_inputs = numpy.dot(self.wh2o, hidden2_outputs)
 		#calculate the signals emerging from final output layer
 		final_outputs = self.activation_function(final_inputs)
 		#output layer error is the (target - actual)
 		output_errors = targets - final_outputs
 		#hidden layer error is the output_errors, split by weights, recombined at hidden nodes
-		hidden_errors = numpy.dot(self.who.T, output_errors)
+		hidden2_errors = numpy.dot(self.wh2o.T, output_errors)
+		#hidden layer error is the output_errors, split by weights, recombined at hidden nodes
+		hidden1_errors = numpy.dot(self.wh1h2.T, hidden2_errors)		
 		#update the weights for the links between the hidden and the output layers
-		self.who += self.lr * numpy.dot((output_errors * final_outputs * (1.0 - final_outputs)),
-		numpy.transpose(hidden_outputs))
+		self.wh2o += self.lr * numpy.dot((output_errors * final_outputs * (1.0 - final_outputs)),
+		numpy.transpose(hidden2_outputs))
 		#update the weights for the links between the input and hidden layer
-		self.wih += self.lr * numpy.dot((hidden_errors * hidden_outputs * (1.0 - hidden_outputs)),
+		self.wh1h2 += self.lr * numpy.dot((hidden2_errors * hidden2_outputs * (1.0 - hidden2_outputs)),
+		numpy.transpose(hidden1_outputs))
+		#update the weights for the links between the input and hidden layer
+		self.wih1 += self.lr * numpy.dot((hidden1_errors * hidden1_outputs * (1.0 - hidden1_outputs)),
 		numpy.transpose(inputs))
 		pass
 
@@ -58,11 +74,15 @@ class neuralNetwork:
 		#convert input list to 2d array
 		inputs = numpy.array(input_list, ndmin=2).T
 		#calculate signals into hidden layer
-		hidden_inputs = numpy.dot(self.wih, inputs)
+		hidden1_inputs = numpy.dot(self.wih1, inputs)
 		#calculate the signals emerging the hidden layer
-		hidden_outputs = self.activation_function(hidden_inputs)
+		hidden1_outputs = self.activation_function(hidden1_inputs)
+		#calculate signals into hidden layer
+		hidden2_inputs = numpy.dot(self.wh1h2, hidden1_outputs)
+		#calculate the signals emerging the hidden layer
+		hidden2_outputs = self.activation_function(hidden2_inputs)
 		#calculate signals into final output layer
-		final_inputs = numpy.dot(self.who, hidden_outputs)
+		final_inputs = numpy.dot(self.wh2o, hidden2_outputs)
 		#calculate the signals emerging from final output layer
 		final_outputs = self.activation_function(final_inputs)
 		return final_outputs
@@ -70,13 +90,14 @@ class neuralNetwork:
 
 # number of input, hidden and output nodes
 input_nodes = 784
-hidden_nodes = 200
+hidden1_nodes = 200
+hidden2_nodes = 50
 output_nodes = 10
 # learning rate
 learning_rate = 0.1
 
 #create instance of neural network
-n = neuralNetwork(input_nodes,hidden_nodes, output_nodes, learning_rate)
+n = neuralNetwork(input_nodes,hidden1_nodes, hidden2_nodes, output_nodes, learning_rate)
 
 #load the mist training data csv file into a list
 training_data_file = open("mnist_train.csv", 'r')

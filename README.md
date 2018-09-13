@@ -17,4 +17,4 @@ For our input data we try to reduce the efforts on our side and use sources from
 
 ## Neural Network
 For the setup of a neural network we might utilize  http://pybrain.org/
-Nazis sind kacke
+
