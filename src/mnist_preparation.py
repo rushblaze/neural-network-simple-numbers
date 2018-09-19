@@ -1,3 +1,5 @@
+import numpy
+
 #neural network class definition
 class MNISTHelper:
 
@@ -74,12 +76,44 @@ class MNISTHelper:
 		l.close()
 
 	def convertPixelToSum(self, data_list, source="mnist", normalize="true"):
-		# FIXME: calculate sum of rows and columns and normalize them if required to fix #2
-		pass
+		# TODO: normalize result depending on parameter to fix #2
+		# we need to know the underlying data format
+		if(source=="mnist"):
+			dimension = 28
+		else:
+			dimension = 28
+		
+		print(data_list)
+		
+		result = []
+		rows = []
+		columns = []
+		for picture in data_list:
+			pixels = numpy.asfarray(picture.split(',')[1:])
+			result.append(int(numpy.asfarray(picture.split(',')[0:1])[0]))
+			print(result)
+			# get the row sum
+			for i in range(0, dimension):
+				sum = 0
+				for j in range(0, dimension):
+					sum += int(pixels[i*dimension+j])
+				else:
+					rows.append(sum)
+				
+				sum = 0
+				for j in range(0, dimension):
+					sum += int(pixels[i+j*dimension])
+				else:
+					columns.append(sum)
+		
+		result.extend(rows)
+		result.extend(columns)
+		
+		return result
 
 	def addNoiseToData(self, data_list, weight):
 		# FIXME: Implement to solve #5
 		pass
-	
+
 #getDataFromMNIST("train-images-idx3-ubyte", "train-labels-idx1-ubyte", "mnist_train.csv", 60000)
 #getDataFromMNIST("t10k-images-idx3-ubyte", "t10k-labels-idx1-ubyte", "mnist_test.csv", 10000)
